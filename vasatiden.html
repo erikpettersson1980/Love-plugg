@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kalmarunionen och Gustav Vasa</title>
+<link href="https://fonts.googleapis.com/css2?family=Andika:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#f6f1e7; --card:#fffdf8; --ink:#2b2a33; --muted:#6b6876;
+    --blue:#2f5d9e; --blue-l:#dbe6f6; --gold:#e0a526; --gold-l:#fbefcf;
+    --green:#2e8a57; --green-l:#d9f1e3; --red:#c4473a; --red-l:#f8dcd8;
+    --line:#e4ddcf;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:"Andika",system-ui,sans-serif;font-size:18px;line-height:1.45}
+  header{background:var(--blue);color:#fff;padding:18px 16px 14px;text-align:center}
+  header h1{margin:0;font-size:1.35rem}
+  header p{margin:4px 0 0;opacity:.85;font-size:.95rem}
+  .stars{margin-top:8px;font-size:1rem;letter-spacing:2px}
+  nav{display:flex;gap:6px;padding:10px;overflow-x:auto;background:#fff;border-bottom:2px solid var(--line);position:sticky;top:0;z-index:5}
+  nav button{flex:1 0 auto;border:2px solid var(--line);background:var(--card);border-radius:14px;padding:8px 12px;font:inherit;font-size:.95rem;cursor:pointer;color:var(--ink)}
+  nav button.on{background:var(--blue);color:#fff;border-color:var(--blue)}
+  main{max-width:640px;margin:0 auto;padding:16px}
+  h2{font-size:1.2rem;margin:.2em 0 .6em}
+  .hint{color:var(--muted);font-size:.95rem;margin:0 0 12px}
+  .btn{border:none;background:var(--blue);color:#fff;border-radius:14px;padding:12px 18px;font:inherit;font-weight:700;cursor:pointer}
+  .btn.light{background:var(--blue-l);color:var(--blue)}
+  .btn.gold{background:var(--gold);color:#2b2a33}
+  .row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:14px}
+
+  /* Kort */
+  .flip{perspective:1000px;height:280px;cursor:pointer;margin:0 auto}
+  .flip-inner{position:relative;width:100%;height:100%;transition:transform .5s;transform-style:preserve-3d}
+  .flip.turned .flip-inner{transform:rotateY(180deg)}
+  .face{position:absolute;inset:0;backface-visibility:hidden;border-radius:22px;background:var(--card);border:3px solid var(--line);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;text-align:center;box-shadow:0 4px 0 var(--line)}
+  .face.back{transform:rotateY(180deg);background:var(--gold-l);border-color:var(--gold)}
+  .emoji{font-size:3.4rem;line-height:1}
+  .term{font-size:1.6rem;font-weight:700;margin-top:10px}
+  .def{font-size:1.25rem}
+  .extra{font-size:.95rem;color:var(--muted);margin-top:12px}
+  .tap{font-size:.85rem;color:var(--muted);margin-top:14px}
+  .counter{text-align:center;color:var(--muted);margin-top:10px}
+
+  /* Para ihop */
+  .pairs{display:grid;grid-template-columns:1fr 1.5fr;gap:10px}
+  .col{display:flex;flex-direction:column;gap:10px}
+  .tile{border:3px solid var(--line);background:var(--card);border-radius:14px;padding:10px;font:inherit;font-size:.95rem;text-align:left;cursor:pointer;color:var(--ink);min-height:58px}
+  .tile.t{font-weight:700;font-size:1rem}
+  .tile.sel{border-color:var(--blue);background:var(--blue-l)}
+  .tile.ok{border-color:var(--green);background:var(--green-l);cursor:default;opacity:.75}
+  .tile.bad{border-color:var(--red);background:var(--red-l);animation:shake .35s}
+  @keyframes shake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+
+  /* Quiz */
+  .q{background:var(--card);border:3px solid var(--line);border-radius:20px;padding:18px}
+  .q .ask{font-size:1.2rem;font-weight:700;margin-bottom:12px}
+  .opts{display:flex;flex-direction:column;gap:10px}
+  .opt{border:3px solid var(--line);background:#fff;border-radius:14px;padding:12px;font:inherit;text-align:left;cursor:pointer;color:var(--ink)}
+  .opt.ok{border-color:var(--green);background:var(--green-l)}
+  .opt.bad{border-color:var(--red);background:var(--red-l)}
+  .feedback{margin-top:12px;font-weight:700;min-height:1.4em}
+  .bar{height:12px;background:var(--line);border-radius:6px;overflow:hidden;margin-bottom:12px}
+  .bar>div{height:100%;background:var(--gold);transition:width .3s}
+  .big{font-size:3rem;text-align:center}
+  .center{text-align:center}
+
+  /* Tidslinje */
+  .tl{display:flex;flex-direction:column;gap:10px}
+  .ev{display:flex;align-items:center;gap:10px;background:var(--card);border:3px solid var(--line);border-radius:14px;padding:10px}
+  .ev .txt{flex:1}
+  .ev .yr{font-weight:700;color:var(--blue);min-width:70px}
+  .ev.ok{border-color:var(--green);background:var(--green-l)}
+  .ev.bad{border-color:var(--red);background:var(--red-l)}
+  .arrows{display:flex;flex-direction:column;gap:4px}
+  .arrows button{border:none;background:var(--blue-l);color:var(--blue);border-radius:8px;width:40px;height:30px;font-size:1rem;cursor:pointer}
+  .confetti{position:fixed;top:-20px;font-size:1.6rem;pointer-events:none;animation:fall 1.8s linear forwards;z-index:50}
+  @keyframes fall{to{transform:translateY(105vh) rotate(360deg)}}
+</style>
+</head>
+<body>
+<header>
+  <h1>👑 Kalmarunionen och Gustav Vasa</h1>
+  <p>Plugga de 12 begreppen</p>
+  <div class="stars" id="stars"></div>
+</header>
+<nav id="nav">
+  <button data-v="kort" class="on">🃏 Kort</button>
+  <button data-v="para">🔗 Para ihop</button>
+  <button data-v="quiz">❓ Quiz</button>
+  <button data-v="tid">📅 Tidslinje</button>
+</nav>
+<main id="app"></main>
+
+<script>
+const T = [
+  {t:"Kalmarunionen", e:"🤝", d:"Var en union mellan Danmark, Norge och Sverige.", x:"Bildades i Kalmar år 1397. Drottning Margareta låg bakom den."},
+  {t:"Riksföreståndare", e:"🧑‍⚖️", d:"Var den som skulle styra i landet när kungen inte var där.", x:"Sten Sture var en känd riksföreståndare i Sverige."},
+  {t:"Unionskung", e:"🤴", d:"Är en kung över hela unionen och inte bara över ett land.", x:"Kristian II var unionskung när Stockholms blodbad hände."},
+  {t:"Stockholms blodbad", e:"🏰", d:"Var när personer som var motståndare till kung Kristian dödades 1520.", x:"Efteråt kallades han Kristian Tyrann i Sverige."},
+  {t:"Självägande bönder", e:"🧑‍🌾", d:"Är bönder som äger marken de arbetar på.", x:"De ägde sin egen gård och behövde inte arrendera."},
+  {t:"Dräng/piga", e:"🐄", d:"Var en pojke eller flicka som arbetade hos någon annan, t.ex. på en bondgård.", x:"Dräng = pojke, piga = flicka."},
+  {t:"Avlatsbrev", e:"📜", d:"Såldes av kyrkan. Den som köpte ett avlatsbrev skulle inte straffas lika hårt av Gud efter döden.", x:"Martin Luther tyckte att det var fel att sälja avlatsbrev."},
+  {t:"Protestantism", e:"✝️", d:"Är en riktning inom kristendomen som protesterade mot katolska kyrkan.", x:"Ordet kommer från att protestera."},
+  {t:"Lutheranism", e:"📖", d:"Är Martin Luthers version av protestantismen.", x:"Svenska kyrkan blev luthersk."},
+  {t:"Reformationen", e:"⛪", d:"Är bytet från katolsk kristendom till protestantisk kristendom.", x:"I Sverige började det 1527, när Gustav Vasa tog över kyrkans makt och rikedomar."},
+  {t:"Dackefejden", e:"⚔️", d:"Var ett bondeuppror mot de höga skatterna.", x:"Leddes av Nils Dacke i Småland 1542–1543."},
+  {t:"Gustav Vasa", e:"👑", d:"Sveriges kung från 1523. Han gjorde Sverige självständigt och stärkte kungens makt.", x:"Han valdes till kung den 6 juni 1523 – därför är det nationaldag då."}
+];
+const EVENTS = [
+  {y:"1397", s:1397, t:"Kalmarunionen bildas"},
+  {y:"1517", s:1517, t:"Martin Luther protesterar mot avlatsbreven"},
+  {y:"1520", s:1520, t:"Stockholms blodbad"},
+  {y:"1523", s:1523, t:"Gustav Vasa blir kung"},
+  {y:"1527", s:1527, t:"Reformationen börjar i Sverige"},
+  {y:"1542", s:1542, t:"Dackefejden – bondeupproret"}
+];
+
+const app = document.getElementById("app");
+const shuffle = a => { a=[...a]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]} return a; };
+const esc = s => s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+
+// Stjärnor (sparas i webbläsaren om det går)
+let stars = {para:0, quiz:0, tid:0};
+try{ const s = JSON.parse(localStorage.getItem("vasa-stars")||"null"); if(s) stars = Object.assign(stars,s); }catch(e){}
+function saveStars(){ try{ localStorage.setItem("vasa-stars", JSON.stringify(stars)); }catch(e){} drawStars(); }
+function drawStars(){
+  document.getElementById("stars").textContent =
+    `🔗 ${"⭐".repeat(Math.min(stars.para,3))||"–"}   ❓ ${"⭐".repeat(Math.min(stars.quiz,3))||"–"}   📅 ${"⭐".repeat(Math.min(stars.tid,3))||"–"}`;
+}
+function confetti(){
+  const e = ["⭐","👑","🎉","✨"];
+  for(let i=0;i<24;i++){
+    const d=document.createElement("div"); d.className="confetti";
+    d.textContent=e[i%e.length]; d.style.left=Math.random()*100+"vw";
+    d.style.animationDelay=(Math.random()*0.6)+"s";
+    document.body.appendChild(d); setTimeout(()=>d.remove(),2600);
+  }
+}
+
+// ---------- Kort ----------
+let ki = 0, korder = [...T.keys()];
+function viewKort(){
+  const c = T[korder[ki]];
+  app.innerHTML = `
+    <h2>Begreppskort</h2>
+    <p class="hint">Säg vad begreppet betyder. Tryck sedan på kortet och kolla.</p>
+    <div class="flip" id="card"><div class="flip-inner">
+      <div class="face"><div class="emoji">${c.e}</div><div class="term">${esc(c.t)}</div><div class="tap">👆 Tryck för att vända</div></div>
+      <div class="face back"><div class="def">${esc(c.d)}</div><div class="extra">💡 ${esc(c.x)}</div></div>
+    </div></div>
+    <div class="counter">${ki+1} av ${T.length}</div>
+    <div class="row">
+      <button class="btn light" id="prev">⬅ Förra</button>
+      <button class="btn light" id="mix">🔀 Blanda</button>
+      <button class="btn" id="next">Nästa ➡</button>
+    </div>`;
+  const card = document.getElementById("card");
+  card.onclick = () => card.classList.toggle("turned");
+  document.getElementById("prev").onclick = () => { ki=(ki-1+T.length)%T.length; viewKort(); };
+  document.getElementById("next").onclick = () => { ki=(ki+1)%T.length; viewKort(); };
+  document.getElementById("mix").onclick = () => { korder = shuffle(korder); ki=0; viewKort(); };
+}
+
+// ---------- Para ihop ----------
+function viewPara(){
+  const set = shuffle(T).slice(0,6);
+  let left = shuffle(set), right = shuffle(set), sel=null, done=0, miss=0;
+  app.innerHTML = `
+    <h2>Para ihop</h2>
+    <p class="hint">Tryck på ett begrepp och sedan på rätt förklaring.</p>
+    <div class="pairs"><div class="col" id="L"></div><div class="col" id="R"></div></div>
+    <div id="res"></div>`;
+  const L=document.getElementById("L"), R=document.getElementById("R");
+  left.forEach(c=>{ const b=document.createElement("button"); b.className="tile t"; b.innerHTML=`${c.e} ${esc(c.t)}`; b.dataset.t=c.t;
+    b.onclick=()=>{ if(b.classList.contains("ok"))return; L.querySelectorAll(".sel").forEach(x=>x.classList.remove("sel")); b.classList.add("sel"); sel=b; }; L.appendChild(b); });
+  right.forEach(c=>{ const b=document.createElement("button"); b.className="tile"; b.textContent=c.d; b.dataset.t=c.t;
+    b.onclick=()=>{ if(!sel||b.classList.contains("ok"))return;
+      if(sel.dataset.t===b.dataset.t){ sel.classList.remove("sel"); sel.classList.add("ok"); b.classList.add("ok"); sel=null; done++;
+        if(done===set.length){ const s = miss===0?3:miss<=2?2:1; stars.para=Math.max(stars.para,s); saveStars(); if(s===3)confetti();
+          document.getElementById("res").innerHTML=`<div class="center" style="margin-top:16px"><div class="big">${"⭐".repeat(s)}</div><p>Klart! ${miss===0?"Inga fel alls!":miss+" fel."}</p><button class="btn" id="again">Spela igen</button></div>`;
+          document.getElementById("again").onclick=viewPara; }
+      } else { miss++; b.classList.add("bad"); setTimeout(()=>b.classList.remove("bad"),400); }
+    }; R.appendChild(b); });
+}
+
+// ---------- Quiz ----------
+function makeQuiz(){
+  return shuffle(T).map((c,i)=>{
+    const others = shuffle(T.filter(o=>o!==c)).slice(0,2);
+    if(i%2===0){
+      return {ask:`Vad betyder <b>${esc(c.t)}</b>? ${c.e}`, opts:shuffle([c,...others]).map(o=>({txt:o.d, ok:o===c})), why:c.x};
+    } else {
+      return {ask:`Vilket begrepp passar?<br><span style="font-weight:400">”${esc(c.d)}”</span>`, opts:shuffle([c,...others]).map(o=>({txt:o.e+" "+o.t, ok:o===c})), why:c.x};
+    }
+  });
+}
+let Q, qi, qscore;
+function viewQuiz(){ Q=makeQuiz(); qi=0; qscore=0; drawQ(); }
+function drawQ(){
+  if(qi>=Q.length){
+    const s = qscore>=12?3:qscore>=9?2:qscore>=6?1:0;
+    stars.quiz=Math.max(stars.quiz,s); saveStars(); if(s===3)confetti();
+    app.innerHTML=`<div class="q center"><div class="big">${s?"⭐".repeat(s):"💪"}</div>
+      <h2>${qscore} av ${Q.length} rätt</h2>
+      <p>${s===3?"Alla rätt – superbra!":s===2?"Jättebra! Nästan alla.":s===1?"Bra kämpat! Kör igen så går det ännu bättre.":"Titta på korten en gång till och försök igen."}</p>
+      <div class="row"><button class="btn" id="again">Kör igen</button><button class="btn light" id="tokort">🃏 Till korten</button></div></div>`;
+    document.getElementById("again").onclick=viewQuiz;
+    document.getElementById("tokort").onclick=()=>go("kort");
+    return;
+  }
+  const q=Q[qi];
+  app.innerHTML=`<div class="bar"><div style="width:${qi/Q.length*100}%"></div></div>
+    <div class="q"><div class="hint">Fråga ${qi+1} av ${Q.length} · ${qscore} rätt</div>
+    <div class="ask">${q.ask}</div><div class="opts" id="opts"></div><div class="feedback" id="fb"></div><div id="nx"></div></div>`;
+  const O=document.getElementById("opts");
+  q.opts.forEach(o=>{ const b=document.createElement("button"); b.className="opt"; b.textContent=o.txt;
+    b.onclick=()=>{ if(O.dataset.done)return; O.dataset.done=1;
+      if(o.ok){ b.classList.add("ok"); qscore++; document.getElementById("fb").innerHTML=`✅ Rätt! <span style="font-weight:400">💡 ${esc(q.why)}</span>`; }
+      else { b.classList.add("bad"); [...O.children].forEach((x,k)=>{ if(q.opts[k].ok) x.classList.add("ok"); }); document.getElementById("fb").textContent="❌ Inte riktigt – det gröna är rätt."; }
+      document.getElementById("nx").innerHTML=`<div class="row"><button class="btn" id="nb">${qi+1<Q.length?"Nästa ➡":"Se resultat"}</button></div>`;
+      document.getElementById("nb").onclick=()=>{ qi++; drawQ(); };
+    }; O.appendChild(b); });
+}
+
+// ---------- Tidslinje ----------
+let tl;
+function viewTid(){ do{ tl=shuffle(EVENTS); }while(tl.every((e,i)=>e===EVENTS[i])); drawTid(false); }
+function drawTid(checked){
+  app.innerHTML=`<h2>Tidslinje</h2>
+    <p class="hint">Flytta händelserna med pilarna så att den äldsta hamnar överst.</p>
+    <div class="tl" id="tl"></div><div class="feedback center" id="fb"></div>
+    <div class="row"><button class="btn gold" id="chk">✔ Kolla ordningen</button><button class="btn light" id="new">🔀 Blanda om</button></div>`;
+  const box=document.getElementById("tl");
+  tl.forEach((e,i)=>{
+    const d=document.createElement("div"); d.className="ev";
+    if(checked) d.classList.add(e===EVENTS[i]?"ok":"bad");
+    d.innerHTML=`<div class="arrows"><button data-i="${i}" data-d="-1">▲</button><button data-i="${i}" data-d="1">▼</button></div>
+      <div class="txt">${esc(e.t)}</div>${checked&&tl.every((x,k)=>x===EVENTS[k])?`<div class="yr">${e.y}</div>`:""}`;
+    box.appendChild(d);
+  });
+  box.querySelectorAll(".arrows button").forEach(b=>b.onclick=()=>{
+    const i=+b.dataset.i, j=i+(+b.dataset.d); if(j<0||j>=tl.length)return;
+    [tl[i],tl[j]]=[tl[j],tl[i]]; drawTid(false);
+  });
+  document.getElementById("new").onclick=viewTid;
+  document.getElementById("chk").onclick=()=>{
+    const right = tl.filter((e,i)=>e===EVENTS[i]).length;
+    drawTid(true);
+    const fb=document.getElementById("fb");
+    if(right===EVENTS.length){ stars.tid=3; saveStars(); confetti(); fb.textContent="🎉 Helt rätt! Nu ser du årtalen också."; }
+    else fb.textContent=`${right} av ${EVENTS.length} på rätt plats. De röda behöver flyttas.`;
+  };
+}
+
+// ---------- Navigering ----------
+const views={kort:viewKort, para:viewPara, quiz:viewQuiz, tid:viewTid};
+function go(v){
+  if(!views[v]) v="kort";
+  document.querySelectorAll("#nav button").forEach(b=>b.classList.toggle("on", b.dataset.v===v));
+  if(location.hash!=="#"+v) history.replaceState(null,"","#"+v);
+  views[v](); window.scrollTo(0,0);
+}
+document.querySelectorAll("#nav button").forEach(b=>b.onclick=()=>go(b.dataset.v));
+window.addEventListener("hashchange",()=>go(location.hash.slice(1)));
+drawStars();
+go(location.hash.slice(1)||"kort");
+</script>
+</body>
+</html>
